@@ -1,0 +1,2160 @@
+/* ==========================================================================
+   NovaByte Solutions - Day 02 (Immersive Edition)
+   Theme   : Jet Black, Cerulean Blue and shiny Neon Rose
+   Layout  : Flexbox in nav, hero, services, features, team and footer
+   Breakpoints:
+     Desktop  > 992px        (default styles)
+     Tablet   577px - 992px
+     Mobile   <= 576px
+
+   Contents
+     1. Design tokens          9.  About section
+     2. Reset and base         10. Services (pinned horizontal scroll)
+     3. Utilities              11. Features and pricing table
+     4. Buttons                12. Team flip cards
+     5. Loader, cursor, extras 13. Contact section and form
+     6. Header and navigation  14. Footer
+     7. Hero (layered city)    15. Animations
+     8. Tech marquee           16. Tablet / 17. Mobile / 18. Reduced motion
+   ========================================================================== */
+
+/* ---------- 1. Design tokens ---------- */
+:root {
+    --black: #0a0a0a;
+    --ink: #111114;
+    --card: #141417;
+    --cerulean: #007ba7;
+    --cerulean-light: #1fa9dd;
+    --ice: #8fd8f2;
+    --rose: #ff2d95;
+    --rose-light: #ff7ab8;
+    --white: #f5f5f7;
+    --text: #e4e4e7;
+    --muted: #a1a1aa;
+    --line: rgba(255, 255, 255, 0.1);
+
+    --rose-shine: linear-gradient(110deg, #b8005f 0%, #ff2d95 22%, #ff9ccb 42%, #ffffff 50%, #ff9ccb 58%, #ff2d95 78%, #b8005f 100%);
+    --blue-letters: linear-gradient(180deg, #eafaff 0%, #8fd8f2 30%, #1fa9dd 62%, #007ba7 100%);
+    --brand-gradient: linear-gradient(120deg, #1fa9dd, #ff2d95);
+
+    --font: "Poppins", "Segoe UI", Arial, sans-serif;
+    --jp: "Noto Sans JP", "Yu Gothic", "Meiryo", "Noto Sans CJK JP", "Noto Sans CJK TC", sans-serif;
+    --radius: 22px;
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- 2. Reset and base ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--black);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+
+::selection {
+    background: var(--rose);
+    color: var(--black);
+}
+
+img,
+video,
+iframe {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: var(--cerulean-light);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--rose-light);
+}
+
+:focus-visible {
+    outline: 3px solid var(--rose);
+    outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--white);
+    line-height: 1.15;
+}
+
+h2 {
+    margin-bottom: 18px;
+    font-size: 3.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+h3 {
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: 14px;
+}
+
+/* ---------- 3. Utilities ---------- */
+.container {
+    width: 88%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section {
+    position: relative;
+}
+
+.section-intro {
+    max-width: 620px;
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: -999px;
+    z-index: 400;
+    padding: 10px 16px;
+    background: var(--rose);
+    color: var(--black);
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    left: 10px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Shiny neon rose text with a moving white glint */
+.shine {
+    font-style: normal;
+    background-image: var(--rose-shine);
+    background-size: 250% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--rose);
+    animation: text-shine 4.5s linear infinite;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: var(--rose-light);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.dash {
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--rose);
+    box-shadow: 0 0 8px var(--rose);
+}
+
+.vertical-text {
+    position: absolute;
+    writing-mode: vertical-rl;
+    color: rgba(245, 245, 247, 0.85);
+    font-family: var(--jp);
+    letter-spacing: 0.45em;
+}
+
+/* Content that slides up when it scrolls into view (only when JS runs) */
+.js .reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s var(--ease), transform 1s var(--ease);
+}
+
+.js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ---------- 4. Buttons ---------- */
+.btn {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 30px;
+    overflow: hidden;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ff2d95, #ff6fb5 50%, #ff2d95);
+    background-size: 200% 100%;
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #a0105e, 0 0 28px rgba(255, 45, 149, 0.5);
+    transition: transform 0.25s var(--ease), box-shadow 0.25s ease, background-position 0.5s ease;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: skewX(-20deg);
+    animation: glint 3.2s ease-in-out infinite;
+}
+
+.btn:hover {
+    color: var(--black);
+    background-position: 100% 0;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 0 #a0105e, 0 0 50px rgba(255, 45, 149, 0.8);
+}
+
+.btn:active {
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 #a0105e, 0 0 20px rgba(255, 45, 149, 0.5);
+}
+
+.btn-outline {
+    background: rgba(10, 10, 10, 0.4);
+    color: var(--white);
+    border: 2px solid var(--cerulean-light);
+    box-shadow: 0 6px 0 rgba(0, 123, 167, 0.6), inset 0 0 18px rgba(31, 169, 221, 0.2);
+}
+
+.btn-outline:hover {
+    color: var(--white);
+    border-color: var(--rose);
+    background: rgba(255, 45, 149, 0.15);
+    box-shadow: 0 10px 0 rgba(160, 16, 94, 0.7), 0 0 40px rgba(255, 45, 149, 0.5);
+}
+
+/* ---------- 5. Loader, cursor and extras ---------- */
+.preloader {
+    display: none;
+}
+
+.js .preloader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    background: var(--black);
+    transition: transform 1s var(--ease);
+}
+
+.is-loaded .preloader {
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+.preloader-word {
+    margin: 0;
+    font-size: 9rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    background-image: var(--blue-letters);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px var(--rose);
+    filter: drop-shadow(0 0 18px rgba(255, 45, 149, 0.7));
+}
+
+.preloader-bar {
+    width: 320px;
+    max-width: 70%;
+    height: 2px;
+    overflow: hidden;
+    background: var(--line);
+}
+
+.preloader-bar span {
+    display: block;
+    height: 100%;
+    background: var(--brand-gradient);
+    box-shadow: 0 0 12px var(--rose);
+    transform: scaleX(var(--load, 0));
+    transform-origin: left;
+}
+
+.preloader-count {
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+}
+
+.cursor-dot,
+.cursor-ring {
+    display: none;
+}
+
+.has-cursor body,
+.has-cursor a,
+.has-cursor button,
+.has-cursor label,
+.has-cursor .flip-card {
+    cursor: none;
+}
+
+.has-cursor .cursor-dot,
+.has-cursor .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 450;
+    display: block;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    background: var(--rose);
+    box-shadow: 0 0 12px var(--rose);
+}
+
+.cursor-ring {
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+    border: 1px solid rgba(31, 169, 221, 0.8);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), margin 0.3s var(--ease), background 0.3s ease, border-color 0.3s ease;
+}
+
+.cursor-ring.is-hover {
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+    border-color: var(--rose);
+    background: rgba(255, 45, 149, 0.12);
+}
+
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.progress {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 90;
+    width: 3px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(var(--cerulean-light), var(--rose));
+    box-shadow: 0 0 10px var(--rose);
+    transform: scaleY(var(--progress, 0));
+    transform-origin: top;
+}
+
+/* ---------- 6. Header and navigation (Flexbox) ---------- */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0));
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Solid header once the page is scrolled (class added by JS) */
+.site-header.is-scrolled {
+    background: rgba(10, 10, 10, 0.92);
+    box-shadow: 0 1px 0 rgba(255, 45, 149, 0.25), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 18px 5%;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: var(--white);
+}
+
+.brand img {
+    border-radius: 10px;
+    animation: logo-pulse 3s ease-in-out infinite;
+}
+
+.brand span {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    line-height: 1.15;
+}
+
+.brand small {
+    color: var(--muted);
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.4em;
+}
+
+.main-nav ul {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+}
+
+.main-nav a {
+    position: relative;
+    display: block;
+    padding: 8px 14px;
+    color: rgba(245, 245, 247, 0.8);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Animated underline that grows from the centre */
+.main-nav a::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 2px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--brand-gradient);
+    box-shadow: 0 0 10px var(--rose);
+    transform: scaleX(0);
+    transition: transform 0.4s var(--ease);
+}
+
+.main-nav a:hover,
+.main-nav a:focus,
+.main-nav a.is-active {
+    color: var(--white);
+    text-shadow: 0 0 12px rgba(255, 45, 149, 0.8);
+}
+
+.main-nav a:hover::after,
+.main-nav a:focus::after,
+.main-nav a.is-active::after {
+    transform: scaleX(1);
+}
+
+.nav-toggle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-toggle-label {
+    display: none;
+}
+
+/* ---------- 7. Hero: layered city with the giant letters ---------- */
+.hero {
+    height: 300vh; /* the extra height is the scroll distance for the effect */
+}
+
+.hero-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Fade at the bottom so the hero melts into the next section */
+.hero-sticky::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    height: 16vh;
+    background: linear-gradient(to top, var(--black), transparent);
+    pointer-events: none;
+}
+
+.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.layer-mid,
+.layer-near,
+.layer-floor,
+.layer-sky,
+.layer-moon,
+.layer-far {
+    pointer-events: none;
+}
+
+.layer img {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center bottom;
+}
+
+.layer-sky {
+    background:
+        radial-gradient(ellipse at 70% 30%, rgba(255, 45, 149, 0.22), transparent 45%),
+        radial-gradient(ellipse at 15% 85%, rgba(0, 123, 167, 0.4), transparent 50%),
+        linear-gradient(to bottom, #050508 0%, #0a0c1a 45%, #170b1c 75%, #260a20 100%);
+}
+
+/* Twinkling stars */
+.layer-sky::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image:
+        radial-gradient(2px 2px at 30px 40px, #ffffff, transparent),
+        radial-gradient(1px 1px at 140px 90px, #ffd6ea, transparent),
+        radial-gradient(1.5px 1.5px at 220px 150px, #bfe8ff, transparent),
+        radial-gradient(1px 1px at 330px 60px, #ffffff, transparent);
+    background-size: 380px 240px;
+    opacity: 0.7;
+    animation: twinkle 4s ease-in-out infinite;
+}
+
+.layer-moon {
+    display: flex;
+    justify-content: flex-end;
+    padding: 14vh 16vw 0 0;
+}
+
+.moon {
+    width: 26vmin;
+    height: 26vmin;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 38%, rgba(110, 0, 45, 0.45) 0, rgba(110, 0, 45, 0.45) 7%, transparent 8%),
+        radial-gradient(circle at 62% 30%, rgba(110, 0, 45, 0.35) 0, rgba(110, 0, 45, 0.35) 5%, transparent 6%),
+        radial-gradient(circle at 55% 66%, rgba(110, 0, 45, 0.4) 0, rgba(110, 0, 45, 0.4) 9%, transparent 10%),
+        radial-gradient(circle at 28% 64%, rgba(110, 0, 45, 0.3) 0, rgba(110, 0, 45, 0.3) 4%, transparent 5%),
+        radial-gradient(circle at 35% 30%, #ffb3d6 0%, #ff2d95 45%, #a1004f 100%);
+    box-shadow: 0 0 60px rgba(255, 45, 149, 0.65), 0 0 180px rgba(255, 45, 149, 0.35), inset -18px -14px 40px rgba(80, 0, 35, 0.6);
+}
+
+.layer-far img {
+    height: 70vh;
+    opacity: 0.9;
+}
+
+.layer-title {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 16vh;
+}
+
+/* The giant letters: cerulean blue fill with a neon rose outline and glow */
+.big-title {
+    display: flex;
+    margin: 0;
+    font-size: 24vw;
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.01em;
+    perspective: 900px;
+}
+
+.letter {
+    display: inline-block;
+    background-image: var(--blue-letters);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px rgba(255, 45, 149, 0.95);
+    color: var(--cerulean-light);
+    filter: drop-shadow(0 0 4px rgba(255, 45, 149, 0.9)) drop-shadow(0 0 30px rgba(255, 45, 149, 0.5));
+    transform-origin: 50% 100%;
+    cursor: default;
+}
+
+/* Hover: the letter jumps and turns fully neon rose */
+.letter:hover {
+    background-image: var(--rose-shine);
+    background-size: 250% 100%;
+    -webkit-text-stroke: 2px #ffffff;
+    filter: drop-shadow(0 0 8px rgba(255, 45, 149, 1)) drop-shadow(0 0 50px rgba(255, 45, 149, 0.8));
+}
+
+/* Before the loader finishes, the letters wait out of sight */
+.js .letter {
+    opacity: 0;
+}
+
+.js.is-loaded .letter {
+    opacity: 1;
+    animation:
+        letter-in 1.3s var(--ease) backwards,
+        letter-float 5s ease-in-out 1.6s infinite,
+        neon-flicker 8s linear 1.6s infinite;
+}
+
+.js.is-loaded .letter:nth-child(3) { animation-delay: 0.12s, 1.9s, 3.1s; }
+.js.is-loaded .letter:nth-child(4) { animation-delay: 0.24s, 2.2s, 4.6s; }
+.js.is-loaded .letter:nth-child(5) { animation-delay: 0.36s, 2.5s, 2.2s; }
+
+/* After the intro has played (class added by JS), letters only float and flicker */
+.js.is-loaded.intro-done .letter {
+    animation:
+        letter-float 5s ease-in-out infinite,
+        neon-flicker 8s linear infinite;
+}
+
+.js.is-loaded.intro-done .letter:nth-child(3) { animation-delay: -1.2s, 1.5s; }
+.js.is-loaded.intro-done .letter:nth-child(4) { animation-delay: -2.4s, 3s; }
+.js.is-loaded.intro-done .letter:nth-child(5) { animation-delay: -3.6s, 0.6s; }
+
+.js.is-loaded.intro-done .letter:hover {
+    animation: letter-jump 0.7s var(--ease);
+}
+
+.layer-mid img {
+    height: 48vh;
+}
+
+.layer-near img {
+    height: 34vh;
+}
+
+.layer-floor {
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(255, 45, 149, 0.25), transparent 55%),
+        linear-gradient(to top, var(--black) 0%, rgba(10, 10, 10, 0.7) 12%, transparent 34%);
+}
+
+.hero-copy {
+    position: absolute;
+    top: 15vh;
+    left: 5%;
+    z-index: 10;
+    max-width: 460px;
+}
+
+.hero-lead {
+    margin-bottom: 14px;
+    color: var(--white);
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
+.hero-sub {
+    max-width: 380px;
+    color: rgba(245, 245, 247, 0.78);
+    font-size: 0.95rem;
+}
+
+.hero-sub strong {
+    color: var(--white);
+}
+
+.hero .vertical-text {
+    top: 17vh;
+    right: 4.5%;
+    z-index: 10;
+    font-size: 1.5rem;
+}
+
+.hero-bottom {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    bottom: 5vh;
+    z-index: 12;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.hero-actions .btn {
+    margin: 0;
+}
+
+.scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 0 10px;
+    color: rgba(245, 245, 247, 0.7);
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.scroll-hint i {
+    position: relative;
+    width: 60px;
+    height: 1px;
+    overflow: hidden;
+    background: var(--line);
+}
+
+.scroll-hint i::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--rose);
+    animation: scroll-line 2s var(--ease) infinite;
+}
+
+.chapter-index {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    font-size: 1.6rem;
+    font-weight: 300;
+}
+
+.chapter-index li {
+    position: relative;
+    color: rgba(245, 245, 247, 0.4);
+    transition: color 0.4s ease;
+}
+
+.chapter-index li.is-active {
+    color: var(--white);
+    text-shadow: 0 0 18px rgba(255, 45, 149, 0.8);
+}
+
+.chapter-index li.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--rose);
+    box-shadow: 0 0 10px var(--rose);
+}
+
+/* ---------- 8. Tech marquee ---------- */
+.marquee {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    padding: 18px 0;
+    border-top: 1px solid rgba(255, 45, 149, 0.25);
+    border-bottom: 1px solid rgba(255, 45, 149, 0.25);
+    background: linear-gradient(90deg, rgba(0, 123, 167, 0.14), rgba(255, 45, 149, 0.14));
+}
+
+.marquee::before,
+.marquee::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    width: 120px;
+    height: 100%;
+}
+
+.marquee::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--black), transparent);
+}
+
+.marquee::after {
+    right: 0;
+    background: linear-gradient(270deg, var(--black), transparent);
+}
+
+.marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    width: max-content;
+    list-style: none;
+    animation: marquee 30s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+.marquee-track li {
+    color: rgba(228, 228, 231, 0.65);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.marquee-track li::before {
+    content: "\2726";
+    margin-right: 48px;
+    color: var(--rose);
+    text-shadow: 0 0 10px var(--rose);
+}
+
+/* ---------- 9. About section ---------- */
+.about {
+    padding: 120px 0;
+    background: linear-gradient(to bottom, var(--black), #0e0810 55%, var(--black));
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 110px;
+    padding: 34px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    list-style: none;
+}
+
+.stats li {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 160px;
+}
+
+.stats strong {
+    color: var(--white);
+    font-size: 3.6rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.stats li > span {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+}
+
+.about-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 70px;
+}
+
+.about-text {
+    flex: 1 1 420px;
+}
+
+.about-text h3 {
+    margin-top: 24px;
+}
+
+.steps {
+    margin-top: 6px;
+    list-style: none;
+    counter-reset: step;
+}
+
+.steps li {
+    position: relative;
+    padding: 8px 0 8px 50px;
+    counter-increment: step;
+}
+
+.steps li::before {
+    content: counter(step);
+    position: absolute;
+    top: 6px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--brand-gradient);
+    color: var(--black);
+    font-weight: 800;
+    box-shadow: 0 0 14px rgba(255, 45, 149, 0.45);
+}
+
+.window {
+    position: relative;
+    flex: 1 1 420px;
+    height: 500px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 45, 149, 0.35);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow), 0 0 60px rgba(255, 45, 149, 0.18);
+}
+
+.window-scene {
+    position: absolute;
+    top: -8%;
+    right: 0;
+    bottom: -8%;
+    left: 0;
+    background: linear-gradient(to bottom, #07070d, #1b0a1d 70%, #2b0b23);
+}
+
+.small-moon {
+    position: absolute;
+    top: 14%;
+    right: 16%;
+    width: 120px;
+    height: 120px;
+}
+
+.window-scene img {
+    position: absolute;
+    left: -25%;
+    bottom: 0;
+    width: 150%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center bottom;
+}
+
+.win-far {
+    height: 75%;
+}
+
+.win-mid {
+    height: 55%;
+}
+
+.window figcaption {
+    position: absolute;
+    left: 24px;
+    bottom: 20px;
+    color: rgba(245, 245, 247, 0.85);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+}
+
+.about-extra {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 90px;
+}
+
+aside {
+    flex: 1 1 280px;
+    padding: 30px;
+    border: 1px solid rgba(255, 45, 149, 0.3);
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, rgba(255, 45, 149, 0.12), rgba(0, 123, 167, 0.1));
+    box-shadow: var(--shadow);
+}
+
+aside ul {
+    padding-left: 18px;
+}
+
+aside li {
+    margin: 10px 0;
+}
+
+aside strong {
+    color: var(--rose-light);
+    font-size: 1.3rem;
+}
+
+.video-card {
+    flex: 2 1 420px;
+}
+
+video {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow), 0 0 0 1px var(--line), 0 0 40px rgba(255, 45, 149, 0.2);
+}
+
+figcaption {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* ---------- 10. Services: pinned horizontal scroll (Flexbox track) ---------- */
+.services {
+    height: 380vh; /* scroll distance used to slide the cards sideways */
+}
+
+.services-sticky {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    height: 100vh;
+    overflow: hidden;
+    padding-top: 60px;
+}
+
+.services-head h2 {
+    margin: 0;
+}
+
+.services-track {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 34px;
+    width: max-content;
+    padding: 0 6%;
+}
+
+.panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 0 0 420px;
+    height: 460px;
+    padding: 36px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    /* Solid card colour inside, gradient used as the border */
+    background:
+        linear-gradient(160deg, #17171b, #0f0f12) padding-box,
+        linear-gradient(140deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)) border-box;
+    box-shadow: var(--shadow);
+    transition: transform 0.5s var(--ease), box-shadow 0.5s ease;
+}
+
+/* Light that sweeps across the card on hover */
+.panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.9s ease;
+}
+
+.panel:hover {
+    background:
+        linear-gradient(160deg, #17171b, #0f0f12) padding-box,
+        linear-gradient(120deg, #1fa9dd, #ff2d95, #1fa9dd) border-box;
+    background-size: 100% 100%, 200% 200%;
+    transform: translateY(-14px) rotate(-1deg);
+    box-shadow: var(--shadow), 0 0 50px rgba(255, 45, 149, 0.35);
+    animation: border-flow 3s linear infinite;
+}
+
+.panel:hover::after {
+    left: 140%;
+}
+
+.panel-num {
+    position: absolute;
+    top: 14px;
+    right: 26px;
+    color: transparent;
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    -webkit-text-stroke: 1px rgba(255, 45, 149, 0.5);
+}
+
+.panel img {
+    margin-bottom: auto;
+    filter: drop-shadow(0 0 12px rgba(31, 169, 221, 0.8));
+    animation: float-small 4s ease-in-out infinite;
+}
+
+.panel h3 {
+    font-size: 1.6rem;
+}
+
+.panel p {
+    margin: 0;
+    color: rgba(245, 245, 247, 0.7);
+}
+
+.panel-cta {
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255, 45, 149, 0.3), transparent 70%) padding-box,
+        linear-gradient(140deg, rgba(255, 45, 149, 0.6), rgba(0, 123, 167, 0.6)) border-box;
+}
+
+.panel-cta h3 {
+    font-size: 2.8rem;
+}
+
+.panel-cta p {
+    margin-bottom: 10px;
+}
+
+.services-progress {
+    height: 2px;
+    background: var(--line);
+}
+
+.services-progress span {
+    display: block;
+    height: 100%;
+    background: var(--brand-gradient);
+    box-shadow: 0 0 10px var(--rose);
+    transform: scaleX(var(--services, 0));
+    transform-origin: left;
+}
+
+/* ---------- 11. Features and pricing table ---------- */
+.features {
+    padding: 120px 0;
+    background: linear-gradient(to bottom, var(--black), #070d12 50%, var(--black));
+}
+
+.feature-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 44px 0 0;
+    list-style: none;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1 1 240px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--card);
+    transition: transform 0.4s var(--ease), border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.feature-list li:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 45, 149, 0.55);
+    box-shadow: 0 0 34px rgba(255, 45, 149, 0.22);
+}
+
+.feature-list img {
+    flex-shrink: 0;
+    animation: float-small 4s ease-in-out infinite;
+}
+
+.feature-list li:nth-child(2) img { animation-delay: -1s; }
+.feature-list li:nth-child(3) img { animation-delay: -2s; }
+.feature-list li:nth-child(4) img { animation-delay: -3s; }
+
+.feature-list strong {
+    display: block;
+    color: var(--white);
+}
+
+.feature-list span {
+    color: var(--muted);
+}
+
+.table-title {
+    margin-top: 70px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    background: var(--card);
+}
+
+caption {
+    padding: 16px 20px;
+    background: var(--card);
+    color: var(--muted);
+    text-align: left;
+}
+
+th,
+td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+}
+
+thead th {
+    background: linear-gradient(120deg, rgba(0, 123, 167, 0.5), rgba(255, 45, 149, 0.5));
+    color: var(--white);
+    font-weight: 600;
+}
+
+tbody tr {
+    transition: background 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 45, 149, 0.08);
+}
+
+tbody th {
+    color: var(--white);
+    font-weight: 500;
+}
+
+td:nth-child(3) {
+    background: rgba(255, 45, 149, 0.07);
+    color: var(--rose-light);
+    font-weight: 600;
+}
+
+tfoot td {
+    border-bottom: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/* ---------- 12. Team flip cards (Flexbox) ---------- */
+.team {
+    padding: 120px 0;
+}
+
+.team-grid {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin-top: 44px;
+}
+
+.flip-card {
+    flex: 1 1 230px;
+    height: 350px;
+    perspective: 1000px;
+}
+
+.flip-inner {
+    position: relative;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s var(--ease);
+}
+
+.flip-card:hover .flip-inner,
+.flip-card:focus .flip-inner,
+.flip-card:focus-within .flip-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.flip-front {
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.flip-front img {
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--black), 0 0 0 6px var(--rose), 0 0 35px rgba(255, 45, 149, 0.55);
+    animation: float-small 5s ease-in-out infinite;
+}
+
+.flip-front h3 {
+    margin: 22px 0 2px;
+}
+
+.role {
+    margin: 0;
+    color: var(--cerulean-light);
+    font-weight: 600;
+}
+
+.flip-back {
+    transform: rotateY(180deg);
+    border-color: rgba(255, 45, 149, 0.5);
+    background: linear-gradient(150deg, #2a0a1c, #3b0d29 50%, #06283a);
+    box-shadow: 0 0 40px rgba(255, 45, 149, 0.35);
+}
+
+.flip-back a {
+    color: var(--rose-light);
+    font-weight: 600;
+}
+
+/* ---------- 13. Contact section and styled form ---------- */
+.contact {
+    padding: 120px 0;
+    overflow: hidden;
+}
+
+.contact-glow {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    width: 900px;
+    height: 900px;
+    margin-left: -450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 45, 149, 0.16), transparent 60%);
+    pointer-events: none;
+    animation: breathe 6s ease-in-out infinite;
+}
+
+.contact .container {
+    position: relative;
+}
+
+.contact-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 50px;
+    margin-top: 40px;
+}
+
+.contact-form,
+.contact-info {
+    flex: 1 1 420px;
+}
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, #151518, #0d0d10);
+    box-shadow: var(--shadow);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+fieldset:focus-within {
+    border-color: rgba(255, 45, 149, 0.55);
+    box-shadow: var(--shadow), 0 0 45px rgba(255, 45, 149, 0.22);
+}
+
+legend {
+    padding: 0 10px;
+    color: var(--white);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--cerulean-light);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    background: #09090b;
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #6b6b75;
+}
+
+input:hover,
+textarea:hover {
+    border-color: rgba(31, 169, 221, 0.55);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--rose);
+    background: #110a0e;
+    box-shadow: 0 0 0 4px rgba(255, 45, 149, 0.18), 0 0 22px rgba(255, 45, 149, 0.3);
+}
+
+/* Validation colours appear after the user starts typing */
+input:not(:placeholder-shown):invalid {
+    border-color: #ff5c5c;
+}
+
+input:not(:placeholder-shown):valid {
+    border-color: rgba(31, 169, 221, 0.75);
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 6px;
+}
+
+.contact-info h3 {
+    font-size: 1.6rem;
+}
+
+.contact-info h4,
+.contact-info h5,
+.contact-info h6 {
+    margin: 22px 0 6px;
+    color: var(--rose-light);
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.contact-info address {
+    font-style: normal;
+}
+
+.contact-info address p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.map {
+    margin-top: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 45, 149, 0.3);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow), 0 0 30px rgba(255, 45, 149, 0.15);
+}
+
+.map iframe {
+    width: 100%;
+    height: 280px;
+    border: 0;
+    filter: grayscale(0.4) contrast(1.1);
+}
+
+/* ---------- 14. Footer (Flexbox) ---------- */
+.site-footer {
+    position: relative;
+    overflow: hidden;
+    padding: 110px 0 28px;
+    background: linear-gradient(to bottom, var(--black), #12060f);
+    color: var(--muted);
+}
+
+.site-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cerulean-light), var(--rose), transparent);
+    box-shadow: 0 0 20px var(--rose);
+}
+
+.footer-city {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 260px;
+    max-width: none;
+    object-fit: cover;
+    object-position: center bottom;
+    opacity: 0.35;
+}
+
+.footer-vertical {
+    top: 40px;
+    right: 3%;
+    color: transparent;
+    font-family: var(--font);
+    font-size: 4.5rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.18);
+}
+
+.site-footer .container {
+    position: relative;
+    z-index: 2;
+}
+
+.footer-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding-right: 90px;
+}
+
+.footer-grid > * {
+    flex: 1 1 190px;
+}
+
+.footer-brand {
+    flex: 1.5 1 260px;
+}
+
+.footer-brand h2 {
+    font-size: 1.8rem;
+}
+
+.site-footer h2 {
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.site-footer ul {
+    list-style: none;
+}
+
+.site-footer li {
+    margin: 8px 0;
+}
+
+.site-footer a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.3s ease, padding-left 0.3s ease;
+}
+
+.site-footer li a:hover {
+    padding-left: 6px;
+    color: var(--rose-light);
+}
+
+.newsletter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.newsletter input {
+    flex: 1 1 160px;
+}
+
+.newsletter .btn {
+    padding: 12px 22px;
+}
+
+.copyright {
+    margin-top: 70px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+}
+
+/* ---------- 15. Animations ---------- */
+@keyframes text-shine {
+    from { background-position: 100% 0; }
+    to { background-position: -150% 0; }
+}
+
+@keyframes glint {
+    0% { left: -80%; }
+    45%, 100% { left: 140%; }
+}
+
+@keyframes letter-in {
+    from {
+        opacity: 0;
+        transform: translateY(60%) rotateX(-90deg) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes letter-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes letter-jump {
+    0% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-30px) scale(1.06) rotate(-3deg); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes neon-flicker {
+    0%, 17%, 21%, 24%, 60%, 64%, 100% {
+        filter: drop-shadow(0 0 4px rgba(255, 45, 149, 0.9)) drop-shadow(0 0 30px rgba(255, 45, 149, 0.5));
+    }
+    19%, 22%, 62% {
+        filter: drop-shadow(0 0 1px rgba(255, 45, 149, 0.3));
+    }
+}
+
+@keyframes border-flow {
+    from { background-position: 0 0, 0% 50%; }
+    to { background-position: 0 0, 200% 50%; }
+}
+
+@keyframes float-small {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.85; }
+}
+
+@keyframes scroll-line {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
+
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@keyframes breathe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes logo-pulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(0, 123, 167, 0.6); }
+    50% { box-shadow: 0 0 22px rgba(255, 45, 149, 0.9); }
+}
+
+/* ---------- 16. Tablet (577px - 992px) ---------- */
+@media (min-width: 577px) and (max-width: 992px) {
+    h2 {
+        font-size: 2.8rem;
+    }
+
+    .header-inner {
+        justify-content: center;
+    }
+
+    .main-nav ul {
+        justify-content: center;
+    }
+
+    .hero-copy {
+        top: 19vh;
+    }
+
+    .hero-lead {
+        font-size: 2.3rem;
+    }
+
+    .big-title {
+        font-size: 26vw;
+    }
+
+    .layer-title {
+        padding-bottom: 20vh;
+    }
+
+    .hero .vertical-text {
+        top: 21vh;
+    }
+
+    .chapter-index {
+        font-size: 1.2rem;
+        gap: 18px;
+    }
+
+    .about,
+    .features,
+    .team,
+    .contact {
+        padding: 90px 0;
+    }
+
+    .stats strong {
+        font-size: 2.8rem;
+    }
+
+    .panel {
+        flex: 0 0 360px;
+        height: 420px;
+    }
+
+    .window {
+        height: 420px;
+    }
+
+    /* Two cards per row */
+    .feature-list li,
+    .flip-card {
+        flex: 1 1 calc(50% - 28px);
+    }
+
+    .footer-grid > * {
+        flex: 1 1 calc(50% - 40px);
+    }
+
+    .footer-vertical {
+        display: none;
+    }
+
+    .footer-grid {
+        padding-right: 0;
+    }
+}
+
+/* ---------- 17. Mobile (576px and below) ---------- */
+@media (max-width: 576px) {
+    body {
+        font-size: 15px;
+    }
+
+    h2 {
+        font-size: 2.2rem;
+    }
+
+    /* Hamburger menu */
+    .header-inner {
+        row-gap: 0;
+        padding: 14px 5%;
+    }
+
+    .site-header.menu-open,
+    .nav-toggle:checked ~ .main-nav {
+        background: rgba(10, 10, 10, 0.96);
+    }
+
+    .nav-toggle-label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 46px;
+        height: 46px;
+        border: 1px solid rgba(255, 45, 149, 0.5);
+        border-radius: 12px;
+        background: rgba(10, 10, 10, 0.6);
+        cursor: pointer;
+        box-shadow: inset 0 0 12px rgba(255, 45, 149, 0.2);
+    }
+
+    .nav-toggle:focus-visible + .nav-toggle-label {
+        outline: 3px solid var(--rose);
+        outline-offset: 3px;
+    }
+
+    .hamburger,
+    .hamburger::before,
+    .hamburger::after {
+        position: relative;
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--rose);
+        box-shadow: 0 0 8px var(--rose);
+        transition: transform 0.35s ease, background 0.35s ease;
+    }
+
+    .hamburger::before,
+    .hamburger::after {
+        content: "";
+        position: absolute;
+        left: 0;
+    }
+
+    .hamburger::before { top: -7px; }
+    .hamburger::after { top: 7px; }
+
+    .nav-toggle:checked + .nav-toggle-label .hamburger {
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .nav-toggle:checked + .nav-toggle-label .hamburger::before {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle:checked + .nav-toggle-label .hamburger::after {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .main-nav {
+        flex: 1 1 100%;
+        max-height: 0;
+        overflow: hidden;
+        border-radius: 14px;
+        transition: max-height 0.45s ease;
+    }
+
+    .nav-toggle:checked ~ .main-nav {
+        max-height: 440px;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 10px 0;
+    }
+
+    .main-nav a {
+        padding: 13px 16px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.8rem;
+    }
+
+    .main-nav a::after {
+        left: 16px;
+        right: auto;
+        width: 40px;
+    }
+
+    /* Hero */
+    .hero {
+        height: 240vh;
+    }
+
+    .hero-copy {
+        top: 12vh;
+        right: 16%;
+    }
+
+    .hero-lead {
+        font-size: 1.9rem;
+    }
+
+    .hero-sub {
+        font-size: 0.88rem;
+    }
+
+    .hero .vertical-text {
+        top: 13vh;
+        font-size: 1.05rem;
+    }
+
+    .layer-moon {
+        padding: 36vh 8vw 0 0;
+    }
+
+    .moon {
+        width: 30vmin;
+        height: 30vmin;
+    }
+
+    .big-title {
+        font-size: 29vw;
+    }
+
+    .letter {
+        -webkit-text-stroke-width: 1px;
+    }
+
+    .layer-title {
+        padding-bottom: 27vh;
+    }
+
+    .layer-far img {
+        height: 56vh;
+    }
+
+    .layer-mid img {
+        height: 38vh;
+    }
+
+    .layer-near img {
+        height: 26vh;
+    }
+
+    .hero-bottom {
+        bottom: 3vh;
+    }
+
+    .hero-actions {
+        flex: 1 1 100%;
+    }
+
+    .hero-actions .btn {
+        flex: 1 1 140px;
+        padding: 14px 18px;
+    }
+
+    .scroll-hint,
+    .chapter-index {
+        display: none;
+    }
+
+    /* Sections */
+    .about,
+    .features,
+    .team,
+    .contact {
+        padding: 70px 0;
+    }
+
+    .stats {
+        margin-bottom: 60px;
+    }
+
+    .stats li {
+        flex: 1 1 40%;
+    }
+
+    .stats strong {
+        font-size: 2.4rem;
+    }
+
+    .about-grid {
+        gap: 40px;
+    }
+
+    .window {
+        height: 320px;
+    }
+
+    .about-extra {
+        margin-top: 50px;
+    }
+
+    /* Services become a normal vertical list on phones */
+    .services {
+        height: auto;
+        padding: 70px 0;
+    }
+
+    .services-sticky {
+        position: static;
+        height: auto;
+        overflow: visible;
+        padding-top: 0;
+    }
+
+    .services-track {
+        flex-direction: column;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .panel {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 260px;
+        padding: 28px;
+    }
+
+    .panel img {
+        margin-bottom: 40px;
+    }
+
+    .panel-num {
+        font-size: 5.5rem;
+    }
+
+    .panel-cta h3 {
+        font-size: 2.2rem;
+    }
+
+    .services-progress {
+        display: none;
+    }
+
+    /* One card per row */
+    .about-text,
+    .window,
+    aside,
+    .video-card,
+    .feature-list li,
+    .flip-card,
+    .contact-form,
+    .contact-info,
+    .footer-grid > * {
+        flex: 1 1 100%;
+    }
+
+    .flip-card {
+        height: 320px;
+    }
+
+    fieldset {
+        padding: 24px 18px;
+    }
+
+    .form-actions .btn {
+        flex: 1 1 auto;
+    }
+
+    .footer-grid {
+        gap: 28px;
+        padding-right: 0;
+    }
+
+    .footer-vertical {
+        display: none;
+    }
+}
+
+/* ---------- 18. Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .js .letter {
+        opacity: 1;
+    }
+}
